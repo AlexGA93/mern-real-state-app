@@ -40,6 +40,9 @@ export const signInController = async (req: Request, res: Response, next: NextFu
     // create JWT
     const token = signJWT({id: validUser.id});
 
+    // avoid password to be returned 
+    const {password: pass, ...finalUser} = validUser._doc;
+
     // store in the cookies and return user logged in
     res.cookie('access_token',{
       token,
@@ -48,7 +51,7 @@ export const signInController = async (req: Request, res: Response, next: NextFu
       // expires: new Date(Date.now()+24*60*60)
     })
     .status(200)
-    .json(validUser);
+    .json(finalUser);
     
   } catch (err) {
     next(err);
