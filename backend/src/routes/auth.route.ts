@@ -5,5 +5,4 @@ const router: Router = express.Router();
 
 router.post("/signup", signUpController);
 
-
 export default router;

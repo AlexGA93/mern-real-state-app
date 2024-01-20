@@ -5,5 +5,4 @@ const router: Router = express.Router();
 
 router.get("/", testApiController);
 
-
 export default router;

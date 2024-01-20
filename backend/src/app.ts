@@ -16,4 +16,5 @@ app.use(express.json());
 app.use('/api/test', testRouter);
 app.use('/api/auth', signUp);
 
+
 export default app;
