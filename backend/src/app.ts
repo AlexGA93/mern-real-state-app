@@ -1,6 +1,6 @@
 import express, { Express } from 'express';
 import cors from 'cors';
-import { databaseConnection } from './database/database';
+import { databaseConnection } from './database/database.config';
 
 databaseConnection();
 
