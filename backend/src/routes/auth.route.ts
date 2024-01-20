@@ -1,9 +1,9 @@
 import express, { Router, Request, Response } from "express";
-import { testApiController } from "../controllers/test.controller";
+import { signUpController } from "../controllers/auth.controller";
 
 const router: Router = express.Router();
 
-router.get("/", testApiController);
+router.post("/signup", signUpController);
 
 
 export default router;
