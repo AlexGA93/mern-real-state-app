@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { SignUpType } from "../types/types";
+import { useDispatch, useSelector } from 'react-redux';
+import { UserStoreType, UserType } from "../types/types";
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
+import { AppDispatch, RootState} from "../redux/store";
+
 
 const SignIn = () => {
 
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const userState: UserStoreType = useSelector((state: RootState) => state.user);
 
   const defaultFormState = {
     email: '',
@@ -13,15 +19,13 @@ const SignIn = () => {
   }
 
   // local component state
-  const [formData, setFormData] = useState<SignUpType>(defaultFormState);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState<boolean>(false);
-
+  const [formData, setFormData] = useState<UserType>(defaultFormState);
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
 
     setFormData({
-      // leep previous information
+      // keep previous information
       ...formData,
       // update changes
       [e.target.id]: e.target.value
@@ -30,31 +34,33 @@ const SignIn = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // loading state while submiting form data
-    setLoading(true);
+    try {
+      // loading state while submiting form data
+      dispatch(signInStart());
 
-    const request: RequestInit = {
-      method: 'POST',
-      headers: { 'Content-Type' : 'application/json' },
-      body: JSON.stringify(formData)
-    };
-    const res = await fetch('/api/auth/signin', request);
+      const request: RequestInit = {
+        method: 'POST',
+        headers: { 'Content-Type' : 'application/json' },
+        body: JSON.stringify(formData)
+      };
+      const res = await fetch('/api/auth/signin', request);
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if(data.success === false){
-      // deactve loading state
-      setLoading(false);
-      // update error state
-      setError(data.message);
+      if(data.success === false){
+        dispatch(signInFailure(data.message))
+        return;
+      }
+      dispatch(signInSuccess(data))
+      // navigate to Home Page if completed
+      navigate('/');
 
-      return;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        dispatch(signInFailure(error.message))
+      }      
     }
-    setError(null);
-    setLoading(false);
-    // navigate to Home Page if completed
-    navigate('/');
+    
   };
 
   return (
@@ -78,9 +84,9 @@ const SignIn = () => {
           onChange={handleChange}
         />
         <button 
-        disabled={loading}
+        disabled={userState.loading}
         className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
-          { loading ? 'Loading...' : 'Sign In' }
+          { userState.loading ? 'Loading...' : 'Sign In' }
         </button>
       </form>
       {/* buttons */}

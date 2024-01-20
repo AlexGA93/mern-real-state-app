@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { SignUpType } from "../types/types";
+import { UserType } from "../types/types";
 
 const SignUp = () => {
 
@@ -14,7 +14,7 @@ const SignUp = () => {
   }
 
   // local component state
-  const [formData, setFormData] = useState<SignUpType>(defaultFormState);
+  const [formData, setFormData] = useState<UserType>(defaultFormState);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState<boolean>(false);
 
