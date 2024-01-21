@@ -37,10 +37,12 @@ export const signInController = async (
 ) => {
   // body info
   const { email, password }: UserModelType = req.body;
-
+  
   try {
     // check if email exists
     const validUser = await User.findOne({ email });
+    console.log(validUser);
+    
 
     if (!validUser) return next(errorHandler("User Not Found"));
 
