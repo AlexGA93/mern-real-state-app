@@ -13,8 +13,8 @@ const AUTH_API_ROUTES = '/auth';
 
 export const API_ROUTES = {
   AUTH: {
-    SIGNIN: AUTH_API_ROUTES+'/sign-in',
-    SIGNUP: AUTH_API_ROUTES+'/sign-up',
+    SIGNIN: AUTH_API_ROUTES+'/signin',
+    SIGNUP: AUTH_API_ROUTES+'/signup',
   },
   OAUTH: {
     GOOGLE: AUTH_API_ROUTES+'/google'
