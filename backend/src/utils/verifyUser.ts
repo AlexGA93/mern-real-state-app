@@ -18,7 +18,7 @@ export const authenticationByUser  = async (req: Request, res: Response, next: N
 
   // we'll uethis verified token to fonde a user 
   const user = await User.findById({_id: (decoded as JwtPayload).id}).select("_id");
-  
+
   // compare found id with provided id
   if(user!.id === (decoded as JwtPayload).id){
     console.log("User has been authenticated successfully");
