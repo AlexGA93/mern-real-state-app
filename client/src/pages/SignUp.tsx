@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserType } from "../types/types";
+import { Oauth } from "../components";
 
 const SignUp = () => {
 
@@ -90,6 +91,8 @@ const SignUp = () => {
         className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
           { loading ? 'Loading...' : 'Sign Up' }
         </button>
+        {/* Google OAuth Button */}
+        <Oauth />
       </form>
       {/* buttons */}
       <div className="flex gap-2 mt-5">
