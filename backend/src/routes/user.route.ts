@@ -5,6 +5,6 @@ import { authenticationByUser   } from "../utils/verifyUser";
 const router: Router = express.Router();
 
 router.put("/update/:id",authenticationByUser , updateUserController);
-router.delete("/delete/:id",authenticationByUser, deleteUserController)
+router.delete("/delete/:id",authenticationByUser, deleteUserController);
 
 export default router;

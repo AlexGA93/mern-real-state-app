@@ -37,11 +37,10 @@ export const signInController = async (
 ) => {
   // body info
   const { email, password }: UserModelType = req.body;
-  
+
   try {
     // check if email exists
     const validUser = await User.findOne({ email });
-    
 
     if (!validUser) return next(errorHandler("User Not Found"));
 
@@ -78,11 +77,10 @@ export const signInGoogleController = async (
   res: Response,
   next: NextFunction
 ) => {
-  
   try {
     // check if email exists
     const validUser = await User.findOne({ email: req.body.email });
-    
+
     if (validUser) {
       const token: string = signJWT({ id: validUser._id });
       // avoid password to be returned
@@ -104,12 +102,11 @@ export const signInGoogleController = async (
       const generatedPassword: string =
         Math.random().toString(36).slice(-8) +
         Math.random().toString(36).slice(-8);
-        // console.log(generatedPassword);
-        
+      // console.log(generatedPassword);
+
       // hash random password
       const hashedPassword: string = hashingPassword(generatedPassword, 10);
       // console.log(hashedPassword);
-      
 
       // new User
       const newUser = new User({
@@ -118,7 +115,7 @@ export const signInGoogleController = async (
           Math.random().toString(36).slice(-4),
         email: req.body.email,
         password: hashedPassword,
-        avatar: req.body.photo
+        avatar: req.body.photo,
       });
       console.log(newUser);
 
@@ -142,6 +139,19 @@ export const signInGoogleController = async (
         .status(200)
         .json(finalUser);
     }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const signOutController = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    res.clearCookie('access_token');
+    res.status(200).json("User has been logout");
   } catch (err) {
     next(err);
   }

@@ -15,7 +15,8 @@ export const ROUTES = {
 export const API_ROUTES = {
   AUTH: {
     SIGNIN: AUTH_API_ROUTES+'/signin',
-    SIGNUP: AUTH_API_ROUTES+'/signup'
+    SIGNUP: AUTH_API_ROUTES+'/signup',
+    SIGNOUT:AUTH_API_ROUTES+'/signout'
   },
   OAUTH: {
     GOOGLE: AUTH_API_ROUTES+'/google'
