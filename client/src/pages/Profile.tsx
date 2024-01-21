@@ -13,11 +13,14 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOutFailure,
+  signOutStart,
+  signOutSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
 } from "../redux/user/userSlice";
-import { USER_ROUTES } from "../utils/constants";
+import { API_ROOT_ROUTE, API_ROUTES, USER_ROUTES } from "../utils/constants";
 
 /**
  * * FIREBASE RULES
@@ -160,6 +163,26 @@ const Profile = () => {
     }
   }
 
+  const handleLogOut = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    try {
+      dispatch(signOutStart());
+
+      const res = await fetch(API_ROOT_ROUTE+API_ROUTES.AUTH.SIGNOUT);
+      const data = await res.json();
+
+      if(data.success === false){
+        dispatch(signOutFailure(data.message));
+        return;
+      }
+
+      dispatch(signOutSuccess(data));
+
+    } catch (error) {
+      dispatch(signOutFailure(error));
+    }
+  }
+
   // use useEffect to make something if file changes (undefined -> File)
   useEffect(
     () => {
@@ -240,7 +263,7 @@ const Profile = () => {
           }
         >
           {userState.loading
-            ? "Updating..."
+            ? "Loading..."
             : updateSuccess
             ? "User Updated Successfully"
             : "Update"}
@@ -255,7 +278,9 @@ const Profile = () => {
           Delete Account
         </button>
         {/* sign out */}
-        <button className="w-full sm:w-48 mt-2 bg-gray-900 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80 ">
+        <button 
+          onClick={handleLogOut}
+          className="w-full sm:w-48 mt-2 bg-gray-900 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80 ">
           Sign Out
         </button>
       </div>
