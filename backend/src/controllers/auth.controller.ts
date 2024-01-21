@@ -77,12 +77,10 @@ export const signInGoogleController = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req.body);
   
   try {
     // check if email exists
     const validUser = await User.findOne({ email: req.body.email });
-    // console.log(validUser);
     
     if (validUser) {
       const token: string = signJWT({ id: validUser._id });

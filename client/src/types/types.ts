@@ -1,7 +1,8 @@
 export interface UserType {
-  username?: string,
-  email: string,
-  password: string
+  username?: string;
+  email: string;
+  password: string;
+  avatar?: string;
 }
 
 export interface UserStoreType {

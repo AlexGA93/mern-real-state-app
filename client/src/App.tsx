@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Home, SignIn, SignUp, About, Profile } from './pages';
-import { Header } from './components';
-
+import { Header, PrivateRoute } from './components';
+import { ROUTES } from './utils/constants';
 
 export default function App() {
   return (
@@ -9,11 +9,14 @@ export default function App() {
     {/* Common component ath the entire site - Header */}
     <Header />
       <Routes>
-        <Route path='/' element={ <Home /> } />
-        <Route path='/sign-in' element={ <SignIn /> } />
-        <Route path='/sign-up' element={ <SignUp /> } />
-        <Route path='/about' element={ <About /> } />
-        <Route path='/profile' element={ <Profile /> } />
+        <Route path={ROUTES.ROOT} element={ <Home /> } />
+        <Route path={ROUTES.SIGNIN} element={ <SignIn /> } />
+        <Route path={ROUTES.SIGNUP} element={ <SignUp /> } />
+        <Route path={ROUTES.ABOUT} element={ <About /> } />
+        {/* Private Routes */}
+        <Route element={<PrivateRoute />}>
+          <Route path={ROUTES.PROFILE} element={ <Profile /> } />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

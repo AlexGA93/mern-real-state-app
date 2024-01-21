@@ -6,6 +6,7 @@ import { UserStoreType, UserType } from "../types/types";
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import { AppDispatch, RootState} from "../redux/store";
 import { Oauth } from "../components";
+import { API_ROOT_ROUTE, API_ROUTES } from "../utils/constants";
 
 
 const SignIn = () => {
@@ -44,7 +45,8 @@ const SignIn = () => {
         headers: { 'Content-Type' : 'application/json' },
         body: JSON.stringify(formData)
       };
-      const res = await fetch('/api/auth/signin', request);
+      
+      const res = await fetch(API_ROOT_ROUTE+API_ROUTES.AUTH.SIGNIN, request);
 
       const data = await res.json();
 

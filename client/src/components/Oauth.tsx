@@ -3,6 +3,7 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { signInFailure, signInSuccess } from "../redux/user/userSlice";
+import { API_ROOT_ROUTE, API_ROUTES } from "../utils/constants";
 
 const Oauth = () => {
 
@@ -26,7 +27,8 @@ const Oauth = () => {
           photo: result.user.photoURL
         })
       };
-      const res = await fetch('/api/auth/google', request );
+      // '/api/auth/google'
+      const res = await fetch(API_ROOT_ROUTE+API_ROUTES.OAUTH.GOOGLE, request);
       const data = await res.json();
 
       dispatch(signInSuccess(data));

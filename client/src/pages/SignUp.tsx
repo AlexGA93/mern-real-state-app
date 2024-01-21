@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserType } from "../types/types";
 import { Oauth } from "../components";
+import { API_ROOT_ROUTE, API_ROUTES } from "../utils/constants";
 
 const SignUp = () => {
 
@@ -41,7 +42,7 @@ const SignUp = () => {
       headers: { 'Content-Type' : 'application/json' },
       body: JSON.stringify(formData)
     };
-    const res = await fetch('/api/auth/signup', request);
+    const res = await fetch(API_ROOT_ROUTE+API_ROUTES.AUTH.SIGNUP, request);
 
     const data = await res.json();
 
