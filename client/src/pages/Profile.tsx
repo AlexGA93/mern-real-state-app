@@ -1,9 +1,11 @@
 import { useRef, useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { UserStoreType } from "../types/types";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from "../utils/firebase";
+import { updateUserFailure, updateUserStart, updateUserSuccess } from "../redux/user/userSlice";
+import { USER_ROUTES } from "../utils/constants";
 
 /**
  * * FIREBASE RULES
@@ -20,17 +22,22 @@ import { app } from "../utils/firebase";
  */
 
 const Profile = () => {
+
+  const dispatch = useDispatch();
+
   // access to redux state
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { currentUser }: UserStoreType = useSelector(
+  const userState: UserStoreType = useSelector(
     (state: RootState) => state.user
   );
+  
 
-  const [formData, setFormData] = useState({avatar:''});
+  const [formData, setFormData] = useState({});
   // state to deal with image upload
   const [file, setFile] = useState<File | undefined>(undefined);    
   const [filePercentage, setFilePercentage] = useState<number>(0); 
   const [fileUploadError, setFileUploadError] = useState<boolean>(false); 
+
   /**
    *   use useRef hook to return a mutable ref object whose '.current'
    * property is initialized to the passed argument (initialValue).
@@ -56,6 +63,7 @@ const Profile = () => {
     // upload to firebase
     const uploadTask = uploadBytesResumable(storageRef, file);
 
+
     uploadTask.on(
       // event
       'state_changed',
@@ -80,6 +88,37 @@ const Profile = () => {
     )
   }  
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({...formData, [e.target.id]:e.target.value});
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const request: RequestInit = {
+        method: 'PUT',
+        headers: { 'Content-Type' : 'application/json' },
+        body: JSON.stringify(formData)
+      };
+      
+      const res = await fetch(USER_ROUTES.UPDATE+"/"+userState.currentUser!._id, request);
+
+      const data = await res.json();
+
+      if(data.success === false) {
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+
+      dispatch(updateUserSuccess(data));
+
+    } catch (error) {
+      dispatch(updateUserFailure(error));
+    }
+  }
+
   // use useEffect to make something if file changes (undefined -> File)
   useEffect(
     () => {
@@ -92,7 +131,7 @@ const Profile = () => {
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">My Profile</h1>
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* hidden input to upload new photo */}
         <input 
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFile(e.target.files![0])}
@@ -105,7 +144,7 @@ const Profile = () => {
         <img
           onClick={handleRef}
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
-          src={formData.avatar || currentUser?.avatar}
+          src={formData.avatar || userState.currentUser?.avatar}
           alt="profile_image"
         />
         {/* image - uploading state */}
@@ -124,17 +163,21 @@ const Profile = () => {
         </p>
         {/* username */}
         <input
+          defaultValue={userState.currentUser?.username}
           type="text"
           className="border p-3 rounded-lg"
           id="username"
           placeholder="Username"
+          onChange={handleChange}
         />
         {/* email */}
         <input
+          defaultValue={userState.currentUser?.email}
           type="email"
           className="border p-3 rounded-lg"
           id="email"
           placeholder="Email"
+          onChange={handleChange}
         />
         {/* password */}
         <input
@@ -142,10 +185,11 @@ const Profile = () => {
           className="border p-3 rounded-lg"
           id="password"
           placeholder="Password"
+          onChange={handleChange}
         />
         {/* buttons */}
         <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          Update
+          {userState.loading ? 'Updating...' : 'Update'}
         </button>
       </form>
       {/*  external buttons */}

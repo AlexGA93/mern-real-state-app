@@ -4,7 +4,8 @@ import { hashingPassword } from '../utils/hash';
 import { User } from '../database/models/User.model';
 
 export const updateUserController = async (req: Request, res: Response, next: NextFunction) => {
-
+  console.log(req.body);
+  
   try {
     if (req.body.password) req.body.password = hashingPassword(req.body.password, 10);
 
