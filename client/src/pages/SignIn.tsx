@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { UserStoreType, UserType } from "../types/types";
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice';
 import { AppDispatch, RootState} from "../redux/store";
+import { Oauth } from "../components";
 
 
 const SignIn = () => {
@@ -88,6 +89,8 @@ const SignIn = () => {
         className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
           { userState.loading ? 'Loading...' : 'Sign In' }
         </button>
+        {/* Google OAuth Button */}
+        <Oauth />
       </form>
       {/* buttons */}
       <div className="flex gap-2 mt-5">
