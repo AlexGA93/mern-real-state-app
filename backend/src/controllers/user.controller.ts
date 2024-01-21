@@ -4,7 +4,6 @@ import { hashingPassword } from '../utils/hash';
 import { User } from '../database/models/User.model';
 
 export const updateUserController = async (req: Request, res: Response, next: NextFunction) => {
-  console.log(req.body);
   
   try {
     if (req.body.password) req.body.password = hashingPassword(req.body.password, 10);
@@ -30,3 +29,16 @@ export const updateUserController = async (req: Request, res: Response, next: Ne
     next(error);
   }
 };
+
+export const deleteUserController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await User.findByIdAndDelete({_id: req.params.id});
+    res.clearCookie('acces_token');
+    res
+    .status(200)
+    .json('User Deleted Successfully')
+    ;
+  } catch (error) {
+    next(error);
+  }
+}

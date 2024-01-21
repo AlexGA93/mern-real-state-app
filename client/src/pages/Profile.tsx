@@ -1,10 +1,22 @@
 import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { UserStoreType } from "../types/types";
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import { UserStoreType, UserType } from "../types/types";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 import { app } from "../utils/firebase";
-import { updateUserFailure, updateUserStart, updateUserSuccess } from "../redux/user/userSlice";
+import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  updateUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+} from "../redux/user/userSlice";
 import { USER_ROUTES } from "../utils/constants";
 
 /**
@@ -22,7 +34,6 @@ import { USER_ROUTES } from "../utils/constants";
  */
 
 const Profile = () => {
-
   const dispatch = useDispatch();
 
   // access to redux state
@@ -30,13 +41,13 @@ const Profile = () => {
   const userState: UserStoreType = useSelector(
     (state: RootState) => state.user
   );
-  
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<UserType>({});
   // state to deal with image upload
-  const [file, setFile] = useState<File | undefined>(undefined);    
-  const [filePercentage, setFilePercentage] = useState<number>(0); 
-  const [fileUploadError, setFileUploadError] = useState<boolean>(false); 
+  const [file, setFile] = useState<File | undefined>(undefined);
+  const [filePercentage, setFilePercentage] = useState<number>(0);
+  const [fileUploadError, setFileUploadError] = useState<boolean>(false);
+  const [updateSuccess, setUpdateSuccess] = useState<boolean>(false);
 
   /**
    *   use useRef hook to return a mutable ref object whose '.current'
@@ -58,19 +69,19 @@ const Profile = () => {
     // generate file name with date to make it unique
     const fileName = new Date().getTime() + file.name;
     // create storage reference
-    const storageRef = ref(storage,fileName);
+    const storageRef = ref(storage, fileName);
 
     // upload to firebase
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-
     uploadTask.on(
       // event
-      'state_changed',
+      "state_changed",
       // observer
       (snapshot) => {
         // tracking upload
-        const progress: number = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const progress: number =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         // update progress local state
         setFilePercentage(progress);
       },
@@ -79,17 +90,16 @@ const Profile = () => {
         setFileUploadError(true);
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref)
-        .then((downloadURL) => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           // upload the local form data with the new avatar photo from firebase
-          setFormData({...formData, avatar:downloadURL});
-        })
+          setFormData({ ...formData, avatar: downloadURL });
+        });
       }
-    )
-  }  
+    );
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({...formData, [e.target.id]:e.target.value});
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -98,47 +108,80 @@ const Profile = () => {
       dispatch(updateUserStart());
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const request: RequestInit = {
-        method: 'PUT',
-        headers: { 'Content-Type' : 'application/json' },
-        body: JSON.stringify(formData)
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
       };
-      
-      const res = await fetch(USER_ROUTES.UPDATE+"/"+userState.currentUser!._id, request);
+
+      const res = await fetch(
+        USER_ROUTES.UPDATE + "/" + userState.currentUser!._id,
+        request
+      );
 
       const data = await res.json();
 
-      if(data.success === false) {
+      if (data.success === false) {
         dispatch(updateUserFailure(data.message));
         return;
       }
 
       dispatch(updateUserSuccess(data));
-
+      setUpdateSuccess(true);
     } catch (error) {
       dispatch(updateUserFailure(error));
+    }
+  };
+
+  const handleDelete = async (e:React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+
+    try {
+      dispatch(deleteUserStart());
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const request: RequestInit = {method: "DELETE"};
+      console.log(USER_ROUTES.DELETE + "/" + userState.currentUser!._id);
+      
+      const res = await fetch(
+        USER_ROUTES.DELETE + "/" + userState.currentUser!._id,
+        request
+      );
+
+      const data = await res.json();
+
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+
+      dispatch(deleteUserSuccess(data));
+
+    } catch (error) {
+      dispatch(deleteUserFailure(error))
     }
   }
 
   // use useEffect to make something if file changes (undefined -> File)
   useEffect(
     () => {
-      if(file) handeFileUpload(file)
+      if (file) handeFileUpload(file);
     },
     // The component will refresh itself every time 'file' changes
     [file]
-  )
+  );
 
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">My Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* hidden input to upload new photo */}
-        <input 
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFile(e.target.files![0])}
-          type="file" 
-          ref={fileRef} 
-          hidden 
-          accept="image/*" 
+        <input
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setFile(e.target.files![0])
+          }
+          type="file"
+          ref={fileRef}
+          hidden
+          accept="image/*"
         />
         {/* image - capable of upload*/}
         <img
@@ -149,17 +192,19 @@ const Profile = () => {
         />
         {/* image - uploading state */}
         <p className="text-sm self-center">
-          {
-            fileUploadError ? (
-              <span className="text-red-700">Error Image Upload ( image must be les than 2mb )</span>
-            ) : filePercentage > 0 && filePercentage < 100 ? (
-              <span className="text-slate-700">{`Uploading ${filePercentage.toFixed(2)}%`}</span>
-            ): filePercentage === 100 && !fileUploadError ? (
-              <span className="text-green-700">Image Successfully Uploaded!</span>
-            ): (
-              ''
-            )
-          }
+          {fileUploadError ? (
+            <span className="text-red-700">
+              Error Image Upload ( image must be les than 2mb )
+            </span>
+          ) : filePercentage > 0 && filePercentage < 100 ? (
+            <span className="text-slate-700">{`Uploading ${filePercentage.toFixed(
+              2
+            )}%`}</span>
+          ) : filePercentage === 100 && !fileUploadError ? (
+            <span className="text-green-700">Image Successfully Uploaded!</span>
+          ) : (
+            ""
+          )}
         </p>
         {/* username */}
         <input
@@ -188,14 +233,25 @@ const Profile = () => {
           onChange={handleChange}
         />
         {/* buttons */}
-        <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-          {userState.loading ? 'Updating...' : 'Update'}
+        <button
+          className={
+            (updateSuccess ? "bg-green-700" : "bg-slate-700") +
+            " text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80"
+          }
+        >
+          {userState.loading
+            ? "Updating..."
+            : updateSuccess
+            ? "User Updated Successfully"
+            : "Update"}
         </button>
       </form>
       {/*  external buttons */}
       <div className="flex flex-wrap justify-center mt-2 sm:justify-between">
         {/* delete account */}
-        <button className="w-full sm:w-48 mt-2 bg-red-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80 ">
+        <button 
+          onClick={handleDelete} 
+          className="w-full sm:w-48 mt-2 bg-red-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80 ">
           Delete Account
         </button>
         {/* sign out */}
