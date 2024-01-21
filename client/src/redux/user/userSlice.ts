@@ -41,6 +41,21 @@ const userSlice = createSlice({
       state.error = action.payload; // ...update error state
       state.loading = false; // ... stop loading process
     },
+    // DELETE
+    deleteUserStart: (state) => {
+      state.loading = true;
+    },
+    deleteUserSuccess: (state) => {
+      //  when proccess has finished successfully...
+      state.currentUser = null; // ... update state user info
+      state.loading = false; // ... stop loading process
+      state.error = null; // ...no error
+    },
+    deleteUserFailure: (state, action) => {
+      // when proccess has an error ...
+      state.error = action.payload; // ...update error state
+      state.loading = false; // ... stop loading process
+    },
   },
 });
 
@@ -51,5 +66,8 @@ export const {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure
 } = userSlice.actions;
 export default userSlice.reducer;

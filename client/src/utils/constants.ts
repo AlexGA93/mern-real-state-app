@@ -23,5 +23,6 @@ export const API_ROUTES = {
 }
 
 export const USER_ROUTES = {
-  UPDATE: API_ROOT_ROUTE+API_USER_ROUTES+'/update'
+  UPDATE: API_ROOT_ROUTE+API_USER_ROUTES+'/update',
+  DELETE: API_ROOT_ROUTE+API_USER_ROUTES+'/delete'
 }

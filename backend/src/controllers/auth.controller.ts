@@ -41,7 +41,6 @@ export const signInController = async (
   try {
     // check if email exists
     const validUser = await User.findOne({ email });
-    console.log(validUser);
     
 
     if (!validUser) return next(errorHandler("User Not Found"));
