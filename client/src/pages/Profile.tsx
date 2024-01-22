@@ -20,7 +20,8 @@ import {
   updateUserStart,
   updateUserSuccess,
 } from "../redux/user/userSlice";
-import { API_ROOT_ROUTE, API_ROUTES, USER_ROUTES } from "../utils/constants";
+import { API_ROOT_ROUTE, API_ROUTES, ROUTES, USER_ROUTES } from "../utils/constants";
+import { Link } from "react-router-dom";
 
 /**
  * * FIREBASE RULES
@@ -268,6 +269,11 @@ const Profile = () => {
             ? "User Updated Successfully"
             : "Update"}
         </button>
+        <Link
+          className="bg-green-700 text-white text-center p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80" 
+          to={ROUTES.CREATE_LISTING}>
+            Create Listing
+        </Link>
       </form>
       {/*  external buttons */}
       <div className="flex flex-wrap justify-center mt-2 sm:justify-between">
