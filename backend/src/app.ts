@@ -2,7 +2,7 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { databaseConnection } from './database/database.config';
-import { test, auth, user } from './routes';
+import { test, auth, user, listing } from './routes';
 
 
 databaseConnection();
@@ -18,6 +18,7 @@ app.use(cookieParser());
 app.use('/api/test', test);
 app.use('/api/user', user);
 app.use('/api/auth', auth);
+app.use('/api/listing', listing)
 
 
 export default app;
