@@ -9,7 +9,8 @@ export const ROUTES = {
   SIGNUP: '/sign-up',
   SIGNOUT: '/sign-out',
   ABOUT: '/about',
-  PROFILE: '/profile'
+  PROFILE: '/profile',
+  CREATE_LISTING: '/create-listing'
 }; 
 
 export const API_ROUTES = {
