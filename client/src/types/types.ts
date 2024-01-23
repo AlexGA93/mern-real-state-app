@@ -11,3 +11,7 @@ export interface UserStoreType {
   error: null | Error,
   loading: boolean
 }
+
+export interface formImageURLSType {
+  imageUrls: string[];
+}
